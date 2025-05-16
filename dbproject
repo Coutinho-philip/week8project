@@ -1,0 +1,55 @@
+-- 1. Departments Table
+CREATE TABLE Departments (
+    department_id INT PRIMARY KEY AUTO_INCREMENT,
+    department_name VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- 2. Students Table
+CREATE TABLE Students (
+    student_id INT PRIMARY KEY AUTO_INCREMENT,
+    full_name VARCHAR(100) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    gender ENUM('Male', 'Female', 'Other') NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    department_id INT,
+    FOREIGN KEY (department_id) REFERENCES Departments(department_id)
+);
+
+-- 3. Instructors Table
+CREATE TABLE Instructors (
+    instructor_id INT PRIMARY KEY AUTO_INCREMENT,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    department_id INT,
+    FOREIGN KEY (department_id) REFERENCES Departments(department_id)
+);
+
+-- 4. Courses Table
+CREATE TABLE Courses (
+    course_id INT PRIMARY KEY AUTO_INCREMENT,
+    course_name VARCHAR(100) NOT NULL,
+    credit_hours INT NOT NULL,
+    instructor_id INT,
+    department_id INT,
+    FOREIGN KEY (instructor_id) REFERENCES Instructors(instructor_id),
+    FOREIGN KEY (department_id) REFERENCES Departments(department_id)
+);
+
+-- 5. Enrollments Table (Many-to-Many: Students ↔ Courses)
+CREATE TABLE Enrollments (
+    student_id INT,
+    course_id INT,
+    enrollment_date DATE NOT NULL,
+    PRIMARY KEY (student_id, course_id),
+    FOREIGN KEY (student_id) REFERENCES Students(student_id),
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+);
+
+-- 6. Grades Table (Optional 1-to-1 with Enrollments)
+CREATE TABLE Grades (
+    student_id INT,
+    course_id INT,
+    grade CHAR(2),
+    PRIMARY KEY (student_id, course_id),
+    FOREIGN KEY (student_id, course_id) REFERENCES Enrollments(student_id, course_id)
+);
